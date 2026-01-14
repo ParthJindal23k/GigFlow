@@ -9,41 +9,19 @@ const cors= require("cors")
 
 const server = http.createServer(app)
 
+
 app.use(cors({
   origin: `${process.env.FRONTEND_URL}`,
   credentials: true
 }));
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "https://gig-flow-dun.vercel.app",
-  "http://localhost:5173"
-].filter(Boolean); // removes undefined
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: `${process.env.FRONTEND_URL}`,
     methods: ["GET", "POST"],
     credentials: true
   }
 });
-
-
 console.log("Allowed Origins:", allowedOrigins);
 global.io = io
 
