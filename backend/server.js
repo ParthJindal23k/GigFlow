@@ -14,14 +14,24 @@ app.use(cors({
   credentials: true
 }));
 const allowedOrigins = [
-  process.env.FRONTEND_URL,          // Production URL from Railway
-  "https://gig-flow-dun.vercel.app", // Hardcoded fallback for production
-  "http://localhost:5173"            // Local development
-];
+  process.env.FRONTEND_URL,
+  "https://gig-flow-dun.vercel.app",
+  "http://localhost:5173"
+].filter(Boolean); // removes undefined
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps) or if in allowed list
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -32,6 +42,7 @@ const io = new Server(server, {
     credentials: true
   }
 });
+
 
 console.log("Allowed Origins:", allowedOrigins);
 global.io = io
