@@ -9,13 +9,6 @@ const onlineUser = require("./utils/onlineUser");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app";
 
-// Apply CORS middleware to Express BEFORE creating the server
-app.use(cors({
-  origin: FRONTEND_URL,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
 
 const server = http.createServer(app);
 
