@@ -2,15 +2,14 @@ require("dotenv").config();
 
 const http = require("http");
 const { Server } = require("socket.io");
+const cors = require("cors");
 const app = require("./app");
 const connectDatabase = require("./config/db");
 const onlineUser = require("./utils/onlineUser");
-const cors = require("cors");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app";
 
-const server = http.createServer(app);
-
+// Apply CORS middleware to Express BEFORE creating the server
 app.use(cors({
   origin: FRONTEND_URL,
   credentials: true,
@@ -18,14 +17,18 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
+const server = http.createServer(app);
+
+// Configure Socket.IO with matching CORS settings
 const io = new Server(server, {
   cors: {
     origin: [
-      process.env.FRONTEND_URL,
+      FRONTEND_URL,
       "http://localhost:5173",
       /^https:\/\/.*\.ngrok-free\.app$/,
     ],
     credentials: true,
+    methods: ["GET", "POST"]
   },
 });
 
@@ -55,4 +58,4 @@ server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
 
-module.exports ={onlineUser}
+module.exports = { onlineUser };
