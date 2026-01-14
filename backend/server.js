@@ -14,21 +14,26 @@ app.use(cors({
   credentials: true
 }));
 const allowedOrigins = [
-  "https://gig-flow-lemon-three.vercel.app",
-  "https://gig-flow-dun.vercel.app",
-  "http://localhost:5173" 
+  process.env.FRONTEND_URL,          // Production URL from Railway
+  "https://gig-flow-dun.vercel.app", // Hardcoded fallback for production
+  "http://localhost:5173"            // Local development
 ];
-
-console.log("CORS Origin set to:", process.env.FRONTEND_URL);
-
 const io = new Server(server, {
   cors: {
-    // If FRONTEND_URL is missing, it will default to the dun.vercel URL
-    origin: process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app", 
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps) or if in allowed list
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true
   }
 });
+
+console.log("Allowed Origins:", allowedOrigins);
 global.io = io
 
 
