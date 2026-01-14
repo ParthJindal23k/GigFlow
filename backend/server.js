@@ -18,13 +18,15 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_URL,
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+    origin: [
+      process.env.FRONTEND_URI,
+      "http://localhost:5173",
+      /^https:\/\/.*\.ngrok-free\.app$/,
+    ],
+    credentials: true,
+  },
 });
 
 global.io = io;
@@ -52,3 +54,5 @@ connectDatabase();
 server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
+
+module.exports ={onlineUser}
