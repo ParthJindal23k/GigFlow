@@ -12,15 +12,26 @@ app.use(cors({
   origin: `${process.env.FRONTEND_URL}`,
   credentials: true
 }));
+const allowedOrigins = [
+  "https://gig-flow-lemon-three.vercel.app",
+  "https://gig-flow-dun.vercel.app",
+  "http://localhost:5173" 
+];
 
-const io = new Server(server,{
-    cors:{
-        origin:`${process.env.FRONTEND_URL}`,
-        methods:["GET","POST"],
-        credentials:true
-    }
-})
-
+const io = new Server(server, {
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 global.io = io
 
 
