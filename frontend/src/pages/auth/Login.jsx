@@ -15,7 +15,7 @@ export default function Login() {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, form, { withCredentials: true });
       navigate("/dashboard");
     } catch (err) {
-      toast.success("Login failed. Please check your credentials.");
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
