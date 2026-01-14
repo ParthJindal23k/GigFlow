@@ -9,7 +9,6 @@ const onlineUser = require("./utils/onlineUser");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app";
 
-
 const server = http.createServer(app);
 
 // Configure Socket.IO with matching CORS settings
@@ -44,11 +43,12 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0'; 
 
 connectDatabase();
 
-server.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`✅ Server running on ${HOST}:${PORT}`);
 });
 
 module.exports = { onlineUser };
