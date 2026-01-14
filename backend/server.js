@@ -11,13 +11,16 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.ap
 
 const server = http.createServer(app);
 
-/* EXPRESS CORS */
 app.use(cors({
   origin: FRONTEND_URL,
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-/* SOCKET CORS */
+app.options("*", cors());
+
+
 const io = new Server(server, {
   cors: {
     origin: FRONTEND_URL,
