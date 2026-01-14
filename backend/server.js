@@ -1,51 +1,53 @@
-require("dotenv").config()
+require("dotenv").config();
 
-const http = require("http")
-const {Server} = require("socket.io")
-const app = require("./app")
-const connectDatabase = require("./config/db")
-const onlineUser= require("./utils/onlineUser")
-const cors= require("cors")
+const http = require("http");
+const { Server } = require("socket.io");
+const app = require("./app");
+const connectDatabase = require("./config/db");
+const onlineUser = require("./utils/onlineUser");
+const cors = require("cors");
 
-const server = http.createServer(app)
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app";
 
+const server = http.createServer(app);
 
+/* EXPRESS CORS */
 app.use(cors({
-  origin: `${process.env.FRONTEND_URL}`,
+  origin: FRONTEND_URL,
   credentials: true
 }));
 
+/* SOCKET CORS */
 const io = new Server(server, {
   cors: {
-    origin: `${process.env.FRONTEND_URL}`,
+    origin: FRONTEND_URL,
     methods: ["GET", "POST"],
     credentials: true
   }
 });
-console.log("Allowed Origins:", allowedOrigins);
-global.io = io
 
+global.io = io;
 
-io.on("connection",(socket)=>{
-    console.log("User connnected" , socket.id)
-    socket.on("register",(userId)=>{
-        onlineUser.set(userId,socket.id)
-    })
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
 
-    socket.on("disconnect",()=>{
-        for(let [key,value] of onlineUser){
-            if(value === socket.id){
-                onlineUser.delete(key)
-            }
-        }
-    })
-})
+  socket.on("register", (userId) => {
+    onlineUser.set(userId, socket.id);
+  });
 
-const PORT = process.env.PORT
+  socket.on("disconnect", () => {
+    for (let [key, value] of onlineUser) {
+      if (value === socket.id) {
+        onlineUser.delete(key);
+      }
+    }
+  });
+});
 
-connectDatabase()
+const PORT = process.env.PORT || 5000;
 
-server.listen(PORT,()=>{
-    console.log(`Server is Running on ${PORT}`)
-})
+connectDatabase();
 
+server.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});
