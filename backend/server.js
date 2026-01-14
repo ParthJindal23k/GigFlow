@@ -5,6 +5,7 @@ const {Server} = require("socket.io")
 const app = require("./app")
 const connectDatabase = require("./config/db")
 const onlineUser= require("./utils/onlineUser")
+const cors= require("cors")
 
 const server = http.createServer(app)
 
@@ -18,16 +19,12 @@ const allowedOrigins = [
   "http://localhost:5173" 
 ];
 
+console.log("CORS Origin set to:", process.env.FRONTEND_URL);
+
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    // If FRONTEND_URL is missing, it will default to the dun.vercel URL
+    origin: process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app", 
     methods: ["GET", "POST"],
     credentials: true
   }
