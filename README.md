@@ -1,4 +1,4 @@
-# Assignment Submit Platform
+# Mini-Freelance MarketPlace Platform
 
 A full-stack web application for managing gigs and bids, built with React (Vite) for the frontend and Node.js/Express/MongoDB for the backend.
 
