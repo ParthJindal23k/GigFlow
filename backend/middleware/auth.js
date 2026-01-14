@@ -1,18 +1,27 @@
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
-module.exports = async(req,res,next) =>{
-    const token = req.cookie.accessToken
-    if(!token){
-        return res.sendStatus(401)
-    }
-    jwt.verify(
-        token,process.env.JWT_SECRET_KEY,
-        (err,decoded)=>{
-            if(err){
-                return res.sendStatus(403)
-            }
-            req.user = decoded.id
-            next()
-        }
-    )
-}
+module.exports = (req, res, next) => {
+
+  const token = req.cookies?.authToken;
+
+  if (!token) {
+    return res.status(401).json({
+      message: "Not logged in"
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    req.user = decoded;
+    next();
+
+  } catch (err) {
+    return res.status(401).json({
+      message: "Invalid token"
+    });
+  }
+};
