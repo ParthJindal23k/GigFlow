@@ -11,12 +11,13 @@ import PostGig from "./pages/gigs/PostGig";
 import GigDetails from "./pages/gigs/GigDetails";
 import AppLayout from "./layouts/AppLayout";
 import { ToastContainer } from 'react-toastify';  
-
+import LandingPage from "./pages/LandingPage";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot" element={<ForgotPassword />} />
