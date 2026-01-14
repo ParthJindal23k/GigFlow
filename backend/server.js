@@ -21,7 +21,7 @@ app.use(cors({
 const io = new Server(server, {
   cors: {
     origin: [
-      process.env.FRONTEND_URI,
+      process.env.FRONTEND_URL,
       "http://localhost:5173",
       /^https:\/\/.*\.ngrok-free\.app$/,
     ],
