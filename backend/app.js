@@ -9,20 +9,24 @@ const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://gig-flow-dun.vercel.app";
 
-app.use(cors({
+const corsOptions = {
   origin: FRONTEND_URL,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200 
+};
 
-app.options('*', cors());
+
+app.use(cors(corsOptions));
+
 
 app.use(express.json());
 app.use(cookieParser());
 
+// Routes
 app.use("/api/gigs", gigRoute);
 app.use("/api/bids", bidRoute);
-app.use('/api/auth', authRoute);
+app.use("/api/auth", authRoute);
 
 module.exports = app;
