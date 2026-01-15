@@ -27,14 +27,27 @@ const register = async(req,res)=>{
   });
 
   const transporter = nodemailer.createTransport({
-    secure:true,
+    secure:false,
     host:'smtp.gmail.com',
-    port:465,
+    port:587,
     auth:{
       user:process.env.EMAIL,
       pass:process.env.EMAIL_PASS
-    }
+    },
+    tls: {
+    rejectUnauthorized: false 
+  },
+  connectionTimeout: 10000, 
+  greetingTimeout: 10000,
   });
+
+  transporter.verify(function (error, success) {
+  if (error) {
+    console.error('❌ Email configuration error:', error);
+  } else {
+    console.log('✅ Email server is ready to send messages');
+  }
+});
 
   const link = `${process.env.BACKEND_URL}/api/auth/verify/${verifyToken}`;
 
