@@ -2,7 +2,8 @@ const user = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const { sendEmail } = require('../config/email');
+
 
 const { generateToken } = require("../utils/generateTokens");
 
@@ -26,40 +27,77 @@ const register = async(req,res)=>{
     emailVerifyToken:verifyToken
   });
 
-  const transporter = nodemailer.createTransport({
-    secure:false,
-    host:'smtp.gmail.com',
-    port:587,
-    auth:{
-      user:process.env.EMAIL,
-      pass:process.env.EMAIL_PASS
-    },
-    tls: {
-    rejectUnauthorized: false 
-  },
-  connectionTimeout: 10000, 
-  greetingTimeout: 10000,
-  });
-
-  transporter.verify(function (error, success) {
-  if (error) {
-    console.error('❌ Email configuration error:', error);
-  } else {
-    console.log('✅ Email server is ready to send messages');
-  }
-});
-
+  
   const link = `${process.env.BACKEND_URL}/api/auth/verify/${verifyToken}`;
 
-  await transporter.sendMail({
-    to:email,
-    subject:"Verify Your Account",
-    html:`
-      <h3>Click to verify</h3>
-      <a href="${link}">Verify Account</a>
-    `
-  });
 
+await sendEmail({
+      to: email, // Use email from req.body, not user.email (user doesn't exist yet)
+      subject: 'Verify Your Email - GigFlow',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; padding: 15px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+            .button:hover { background: #764ba2; }
+            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Welcome to GigFlow!</h1>
+            </div>
+            <div class="content">
+              <h2>Hi ${name},</h2>
+              <p>Thanks for signing up! We're excited to have you on board.</p>
+              <p>Please verify your email address by clicking the button below:</p>
+              
+              <div style="text-align: center;">
+                <a href="${link}" class="button">Verify Email Address</a>
+              </div>
+              
+              <p>Or copy and paste this link into your browser:</p>
+              <p style="background: #fff; padding: 10px; border-radius: 5px; word-break: break-all;">
+                ${link}
+              </p>
+              
+              <p style="margin-top: 30px; color: #666;">
+                <strong>Note:</strong> This link will expire in 24 hours.
+              </p>
+              
+              <p style="margin-top: 20px;">
+                If you didn't create an account, you can safely ignore this email.
+              </p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2026 GigFlow. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      text: `
+        Hi ${name},
+        
+        Welcome to GigFlow! Thanks for signing up.
+        
+        Please verify your email address by clicking this link:
+        ${link}
+        
+        This link will expire in 24 hours.
+        
+        If you didn't create an account, you can safely ignore this email.
+        
+        Best regards,
+        GigFlow Team
+      `
+    });
   res.json({
     message:"Check Your Email to Verify"
   });
